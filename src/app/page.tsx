@@ -154,7 +154,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen" style={{ background: 'var(--bg-deep)' }}>
+    <main className="relative min-h-screen overflow-x-hidden" style={{ background: 'var(--bg-deep)' }}>
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -316,6 +316,31 @@ export default function HomePage() {
                         transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
                       }}
                     >
+                      {/* Episode number badge */}
+                      <div
+                        className="absolute -top-3 -right-3 flex items-center justify-center"
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          background: 'var(--bg-deep)',
+                          border: '1px solid var(--border-subtle)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono), monospace',
+                            fontSize: '0.75rem',
+                            color: 'var(--accent-primary)',
+                            fontWeight: 500,
+                            letterSpacing: '0.02em',
+                          }}
+                        >
+                          E{index + 1}
+                        </span>
+                      </div>
+
                       {/* Left accent line */}
                       <div
                         className="absolute left-0 top-8 bottom-8 w-px"
