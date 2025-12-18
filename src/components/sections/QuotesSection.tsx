@@ -137,48 +137,46 @@ export default function QuotesSection() {
       {/* Quotes container - this is where mouse tracking happens */}
       <div
         ref={quotesContainerRef}
-        className="relative mx-auto cursor-none"
+        className="relative w-full cursor-none"
         style={{
-          height: '1100px',
-          maxWidth: '1400px',
-          padding: '0 2rem',
+          height: '1000px',
+          padding: '0 3rem',
         }}
       >
         {/* The actual quotes - always rendered but masked */}
         <div
           className="absolute inset-0"
           style={{
-            maskImage: `radial-gradient(circle 220px at ${mousePos.x}px ${mousePos.y}px, black 0%, black 50%, transparent 100%)`,
-            WebkitMaskImage: `radial-gradient(circle 220px at ${mousePos.x}px ${mousePos.y}px, black 0%, black 50%, transparent 100%)`,
+            maskImage: `radial-gradient(circle 280px at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
+            WebkitMaskImage: `radial-gradient(circle 280px at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
           }}
         >
-          {/* Scattered quotes */}
+          {/* Scattered quotes - spread across full width */}
           {shadowQuotes.map((quote, index) => {
             const positions = [
-              // Row 1
-              { top: '3%', left: '5%' },
-              { top: '2%', left: '52%' },
+              // Row 1 - spread wide
+              { top: '2%', left: '2%' },
+              { top: '3%', left: '38%' },
+              { top: '1%', left: '72%' },
               // Row 2
-              { top: '15%', left: '25%' },
-              { top: '14%', left: '68%' },
+              { top: '16%', left: '18%' },
+              { top: '14%', left: '55%' },
               // Row 3
-              { top: '28%', left: '3%' },
-              { top: '26%', left: '48%' },
+              { top: '28%', left: '1%' },
+              { top: '30%', left: '35%' },
+              { top: '26%', left: '70%' },
               // Row 4
-              { top: '40%', left: '20%' },
-              { top: '38%', left: '65%' },
+              { top: '42%', left: '15%' },
+              { top: '44%', left: '52%' },
               // Row 5
-              { top: '52%', left: '5%' },
-              { top: '50%', left: '50%' },
+              { top: '56%', left: '2%' },
+              { top: '58%', left: '38%' },
+              { top: '54%', left: '72%' },
               // Row 6
-              { top: '64%', left: '22%' },
-              { top: '62%', left: '62%' },
+              { top: '72%', left: '18%' },
+              { top: '70%', left: '55%' },
               // Row 7
-              { top: '76%', left: '8%' },
-              { top: '74%', left: '52%' },
-              // Row 8
-              { top: '86%', left: '28%' },
-              { top: '85%', left: '68%' },
+              { top: '86%', left: '5%' },
             ];
 
             const pos = positions[index % positions.length];
@@ -186,10 +184,11 @@ export default function QuotesSection() {
             return (
               <div
                 key={index}
-                className="absolute max-w-[320px]"
+                className="absolute"
                 style={{
                   top: pos.top,
                   left: pos.left,
+                  maxWidth: '300px',
                 }}
               >
                 <p
@@ -217,16 +216,16 @@ export default function QuotesSection() {
           })}
         </div>
 
-        {/* Spotlight glow effect following cursor */}
+        {/* Spotlight glow effect following cursor - brighter and more even */}
         {isHovering && (
           <div
             className="absolute pointer-events-none"
             style={{
-              width: '500px',
-              height: '500px',
+              width: '600px',
+              height: '600px',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139, 157, 195, 0.15) 0%, rgba(139, 157, 195, 0.06) 40%, transparent 70%)',
-              transform: `translate(${mousePos.x - 250}px, ${mousePos.y - 250}px)`,
+              background: 'radial-gradient(circle, rgba(139, 157, 195, 0.22) 0%, rgba(139, 157, 195, 0.15) 30%, rgba(139, 157, 195, 0.08) 60%, transparent 85%)',
+              transform: `translate(${mousePos.x - 300}px, ${mousePos.y - 300}px)`,
               transition: 'transform 0.05s ease-out',
             }}
           />
