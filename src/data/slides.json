@@ -1,0 +1,426 @@
+{
+  "s1-e01": [
+    {
+      "id": "s1-e01-slide-01",
+      "imageUrl": "/slides/s1-e01/slide-01.png",
+      "slideNumber": 1,
+      "caption": "The Excavation of the Self - Slide 1"
+    },
+    {
+      "id": "s1-e01-slide-02",
+      "imageUrl": "/slides/s1-e01/slide-02.png",
+      "slideNumber": 2,
+      "caption": "The Excavation of the Self - Slide 2"
+    },
+    {
+      "id": "s1-e01-slide-03",
+      "imageUrl": "/slides/s1-e01/slide-03.png",
+      "slideNumber": 3,
+      "caption": "The Excavation of the Self - Slide 3"
+    },
+    {
+      "id": "s1-e01-slide-04",
+      "imageUrl": "/slides/s1-e01/slide-04.png",
+      "slideNumber": 4,
+      "caption": "The Excavation of the Self - Slide 4"
+    },
+    {
+      "id": "s1-e01-slide-05",
+      "imageUrl": "/slides/s1-e01/slide-05.png",
+      "slideNumber": 5,
+      "caption": "The Excavation of the Self - Slide 5"
+    },
+    {
+      "id": "s1-e01-slide-06",
+      "imageUrl": "/slides/s1-e01/slide-06.png",
+      "slideNumber": 6,
+      "caption": "The Excavation of the Self - Slide 6"
+    },
+    {
+      "id": "s1-e01-slide-07",
+      "imageUrl": "/slides/s1-e01/slide-07.png",
+      "slideNumber": 7,
+      "caption": "The Excavation of the Self - Slide 7"
+    },
+    {
+      "id": "s1-e01-slide-08",
+      "imageUrl": "/slides/s1-e01/slide-08.png",
+      "slideNumber": 8,
+      "caption": "The Excavation of the Self - Slide 8"
+    },
+    {
+      "id": "s1-e01-slide-09",
+      "imageUrl": "/slides/s1-e01/slide-09.png",
+      "slideNumber": 9,
+      "caption": "The Excavation of the Self - Slide 9"
+    },
+    {
+      "id": "s1-e01-slide-10",
+      "imageUrl": "/slides/s1-e01/slide-10.png",
+      "slideNumber": 10,
+      "caption": "The Excavation of the Self - Slide 10"
+    },
+    {
+      "id": "s1-e01-slide-11",
+      "imageUrl": "/slides/s1-e01/slide-11.png",
+      "slideNumber": 11,
+      "caption": "The Excavation of the Self - Slide 11"
+    },
+    {
+      "id": "s1-e01-slide-12",
+      "imageUrl": "/slides/s1-e01/slide-12.png",
+      "slideNumber": 12,
+      "caption": "The Excavation of the Self - Slide 12"
+    },
+    {
+      "id": "s1-e01-slide-13",
+      "imageUrl": "/slides/s1-e01/slide-13.png",
+      "slideNumber": 13,
+      "caption": "The Excavation of the Self - Slide 13"
+    }
+  ],
+  "s1-e02": [
+    {
+      "id": "s1-e02-slide-01",
+      "imageUrl": "/slides/s1-e02/slide-01.png",
+      "slideNumber": 1,
+      "caption": "Ideal Trap Synthesis - Slide 1"
+    },
+    {
+      "id": "s1-e02-slide-02",
+      "imageUrl": "/slides/s1-e02/slide-02.png",
+      "slideNumber": 2,
+      "caption": "Ideal Trap Synthesis - Slide 2"
+    },
+    {
+      "id": "s1-e02-slide-03",
+      "imageUrl": "/slides/s1-e02/slide-03.png",
+      "slideNumber": 3,
+      "caption": "Ideal Trap Synthesis - Slide 3"
+    },
+    {
+      "id": "s1-e02-slide-04",
+      "imageUrl": "/slides/s1-e02/slide-04.png",
+      "slideNumber": 4,
+      "caption": "Ideal Trap Synthesis - Slide 4"
+    },
+    {
+      "id": "s1-e02-slide-05",
+      "imageUrl": "/slides/s1-e02/slide-05.png",
+      "slideNumber": 5,
+      "caption": "Ideal Trap Synthesis - Slide 5"
+    },
+    {
+      "id": "s1-e02-slide-06",
+      "imageUrl": "/slides/s1-e02/slide-06.png",
+      "slideNumber": 6,
+      "caption": "Ideal Trap Synthesis - Slide 6"
+    },
+    {
+      "id": "s1-e02-slide-07",
+      "imageUrl": "/slides/s1-e02/slide-07.png",
+      "slideNumber": 7,
+      "caption": "Ideal Trap Synthesis - Slide 7"
+    },
+    {
+      "id": "s1-e02-slide-08",
+      "imageUrl": "/slides/s1-e02/slide-08.png",
+      "slideNumber": 8,
+      "caption": "Ideal Trap Synthesis - Slide 8"
+    },
+    {
+      "id": "s1-e02-slide-09",
+      "imageUrl": "/slides/s1-e02/slide-09.png",
+      "slideNumber": 9,
+      "caption": "Ideal Trap Synthesis - Slide 9"
+    },
+    {
+      "id": "s1-e02-slide-10",
+      "imageUrl": "/slides/s1-e02/slide-10.png",
+      "slideNumber": 10,
+      "caption": "Ideal Trap Synthesis - Slide 10"
+    },
+    {
+      "id": "s1-e02-slide-11",
+      "imageUrl": "/slides/s1-e02/slide-11.png",
+      "slideNumber": 11,
+      "caption": "Ideal Trap Synthesis - Slide 11"
+    },
+    {
+      "id": "s1-e02-slide-12",
+      "imageUrl": "/slides/s1-e02/slide-12.png",
+      "slideNumber": 12,
+      "caption": "Ideal Trap Synthesis - Slide 12"
+    }
+  ],
+  "s1-e03": [
+    {
+      "id": "s1-e03-slide-01",
+      "imageUrl": "/slides/s1-e03/slide-01.png",
+      "slideNumber": 1,
+      "caption": "Flow State Breakthrough - Slide 1"
+    },
+    {
+      "id": "s1-e03-slide-02",
+      "imageUrl": "/slides/s1-e03/slide-02.png",
+      "slideNumber": 2,
+      "caption": "Flow State Breakthrough - Slide 2"
+    },
+    {
+      "id": "s1-e03-slide-03",
+      "imageUrl": "/slides/s1-e03/slide-03.png",
+      "slideNumber": 3,
+      "caption": "Flow State Breakthrough - Slide 3"
+    },
+    {
+      "id": "s1-e03-slide-04",
+      "imageUrl": "/slides/s1-e03/slide-04.png",
+      "slideNumber": 4,
+      "caption": "Flow State Breakthrough - Slide 4"
+    },
+    {
+      "id": "s1-e03-slide-05",
+      "imageUrl": "/slides/s1-e03/slide-05.png",
+      "slideNumber": 5,
+      "caption": "Flow State Breakthrough - Slide 5"
+    },
+    {
+      "id": "s1-e03-slide-06",
+      "imageUrl": "/slides/s1-e03/slide-06.png",
+      "slideNumber": 6,
+      "caption": "Flow State Breakthrough - Slide 6"
+    },
+    {
+      "id": "s1-e03-slide-07",
+      "imageUrl": "/slides/s1-e03/slide-07.png",
+      "slideNumber": 7,
+      "caption": "Flow State Breakthrough - Slide 7"
+    },
+    {
+      "id": "s1-e03-slide-08",
+      "imageUrl": "/slides/s1-e03/slide-08.png",
+      "slideNumber": 8,
+      "caption": "Flow State Breakthrough - Slide 8"
+    },
+    {
+      "id": "s1-e03-slide-09",
+      "imageUrl": "/slides/s1-e03/slide-09.png",
+      "slideNumber": 9,
+      "caption": "Flow State Breakthrough - Slide 9"
+    },
+    {
+      "id": "s1-e03-slide-10",
+      "imageUrl": "/slides/s1-e03/slide-10.png",
+      "slideNumber": 10,
+      "caption": "Flow State Breakthrough - Slide 10"
+    },
+    {
+      "id": "s1-e03-slide-11",
+      "imageUrl": "/slides/s1-e03/slide-11.png",
+      "slideNumber": 11,
+      "caption": "Flow State Breakthrough - Slide 11"
+    },
+    {
+      "id": "s1-e03-slide-12",
+      "imageUrl": "/slides/s1-e03/slide-12.png",
+      "slideNumber": 12,
+      "caption": "Flow State Breakthrough - Slide 12"
+    },
+    {
+      "id": "s1-e03-slide-13",
+      "imageUrl": "/slides/s1-e03/slide-13.png",
+      "slideNumber": 13,
+      "caption": "Flow State Breakthrough - Slide 13"
+    },
+    {
+      "id": "s1-e03-slide-14",
+      "imageUrl": "/slides/s1-e03/slide-14.png",
+      "slideNumber": 14,
+      "caption": "Flow State Breakthrough - Slide 14"
+    }
+  ],
+  "s1-e04": [
+    {
+      "id": "s1-e04-slide-01",
+      "imageUrl": "/slides/s1-e04/slide-01.png",
+      "slideNumber": 1,
+      "caption": "Trust Flow and Relationship Geology - Slide 1"
+    },
+    {
+      "id": "s1-e04-slide-02",
+      "imageUrl": "/slides/s1-e04/slide-02.png",
+      "slideNumber": 2,
+      "caption": "Trust Flow and Relationship Geology - Slide 2"
+    },
+    {
+      "id": "s1-e04-slide-03",
+      "imageUrl": "/slides/s1-e04/slide-03.png",
+      "slideNumber": 3,
+      "caption": "Trust Flow and Relationship Geology - Slide 3"
+    },
+    {
+      "id": "s1-e04-slide-04",
+      "imageUrl": "/slides/s1-e04/slide-04.png",
+      "slideNumber": 4,
+      "caption": "Trust Flow and Relationship Geology - Slide 4"
+    },
+    {
+      "id": "s1-e04-slide-05",
+      "imageUrl": "/slides/s1-e04/slide-05.png",
+      "slideNumber": 5,
+      "caption": "Trust Flow and Relationship Geology - Slide 5"
+    },
+    {
+      "id": "s1-e04-slide-06",
+      "imageUrl": "/slides/s1-e04/slide-06.png",
+      "slideNumber": 6,
+      "caption": "Trust Flow and Relationship Geology - Slide 6"
+    },
+    {
+      "id": "s1-e04-slide-07",
+      "imageUrl": "/slides/s1-e04/slide-07.png",
+      "slideNumber": 7,
+      "caption": "Trust Flow and Relationship Geology - Slide 7"
+    },
+    {
+      "id": "s1-e04-slide-08",
+      "imageUrl": "/slides/s1-e04/slide-08.png",
+      "slideNumber": 8,
+      "caption": "Trust Flow and Relationship Geology - Slide 8"
+    },
+    {
+      "id": "s1-e04-slide-09",
+      "imageUrl": "/slides/s1-e04/slide-09.png",
+      "slideNumber": 9,
+      "caption": "Trust Flow and Relationship Geology - Slide 9"
+    },
+    {
+      "id": "s1-e04-slide-10",
+      "imageUrl": "/slides/s1-e04/slide-10.png",
+      "slideNumber": 10,
+      "caption": "Trust Flow and Relationship Geology - Slide 10"
+    },
+    {
+      "id": "s1-e04-slide-11",
+      "imageUrl": "/slides/s1-e04/slide-11.png",
+      "slideNumber": 11,
+      "caption": "Trust Flow and Relationship Geology - Slide 11"
+    },
+    {
+      "id": "s1-e04-slide-12",
+      "imageUrl": "/slides/s1-e04/slide-12.png",
+      "slideNumber": 12,
+      "caption": "Trust Flow and Relationship Geology - Slide 12"
+    },
+    {
+      "id": "s1-e04-slide-13",
+      "imageUrl": "/slides/s1-e04/slide-13.png",
+      "slideNumber": 13,
+      "caption": "Trust Flow and Relationship Geology - Slide 13"
+    },
+    {
+      "id": "s1-e04-slide-14",
+      "imageUrl": "/slides/s1-e04/slide-14.png",
+      "slideNumber": 14,
+      "caption": "Trust Flow and Relationship Geology - Slide 14"
+    },
+    {
+      "id": "s1-e04-slide-15",
+      "imageUrl": "/slides/s1-e04/slide-15.png",
+      "slideNumber": 15,
+      "caption": "Trust Flow and Relationship Geology - Slide 15"
+    }
+  ],
+  "s1-e05": [
+    {
+      "id": "s1-e05-slide-01",
+      "imageUrl": "/slides/s1-e05/slide-01.png",
+      "slideNumber": 1,
+      "caption": "The Divided Blueprint - Slide 1"
+    },
+    {
+      "id": "s1-e05-slide-02",
+      "imageUrl": "/slides/s1-e05/slide-02.png",
+      "slideNumber": 2,
+      "caption": "The Divided Blueprint - Slide 2"
+    },
+    {
+      "id": "s1-e05-slide-03",
+      "imageUrl": "/slides/s1-e05/slide-03.png",
+      "slideNumber": 3,
+      "caption": "The Divided Blueprint - Slide 3"
+    },
+    {
+      "id": "s1-e05-slide-04",
+      "imageUrl": "/slides/s1-e05/slide-04.png",
+      "slideNumber": 4,
+      "caption": "The Divided Blueprint - Slide 4"
+    },
+    {
+      "id": "s1-e05-slide-05",
+      "imageUrl": "/slides/s1-e05/slide-05.png",
+      "slideNumber": 5,
+      "caption": "The Divided Blueprint - Slide 5"
+    },
+    {
+      "id": "s1-e05-slide-06",
+      "imageUrl": "/slides/s1-e05/slide-06.png",
+      "slideNumber": 6,
+      "caption": "The Divided Blueprint - Slide 6"
+    },
+    {
+      "id": "s1-e05-slide-07",
+      "imageUrl": "/slides/s1-e05/slide-07.png",
+      "slideNumber": 7,
+      "caption": "The Divided Blueprint - Slide 7"
+    },
+    {
+      "id": "s1-e05-slide-08",
+      "imageUrl": "/slides/s1-e05/slide-08.png",
+      "slideNumber": 8,
+      "caption": "The Divided Blueprint - Slide 8"
+    },
+    {
+      "id": "s1-e05-slide-09",
+      "imageUrl": "/slides/s1-e05/slide-09.png",
+      "slideNumber": 9,
+      "caption": "The Divided Blueprint - Slide 9"
+    },
+    {
+      "id": "s1-e05-slide-10",
+      "imageUrl": "/slides/s1-e05/slide-10.png",
+      "slideNumber": 10,
+      "caption": "The Divided Blueprint - Slide 10"
+    },
+    {
+      "id": "s1-e05-slide-11",
+      "imageUrl": "/slides/s1-e05/slide-11.png",
+      "slideNumber": 11,
+      "caption": "The Divided Blueprint - Slide 11"
+    },
+    {
+      "id": "s1-e05-slide-12",
+      "imageUrl": "/slides/s1-e05/slide-12.png",
+      "slideNumber": 12,
+      "caption": "The Divided Blueprint - Slide 12"
+    },
+    {
+      "id": "s1-e05-slide-13",
+      "imageUrl": "/slides/s1-e05/slide-13.png",
+      "slideNumber": 13,
+      "caption": "The Divided Blueprint - Slide 13"
+    },
+    {
+      "id": "s1-e05-slide-14",
+      "imageUrl": "/slides/s1-e05/slide-14.png",
+      "slideNumber": 14,
+      "caption": "The Divided Blueprint - Slide 14"
+    },
+    {
+      "id": "s1-e05-slide-15",
+      "imageUrl": "/slides/s1-e05/slide-15.png",
+      "slideNumber": 15,
+      "caption": "The Divided Blueprint - Slide 15"
+    }
+  ]
+}

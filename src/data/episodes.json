@@ -1,0 +1,78 @@
+{
+  "seasons": [
+    {
+      "id": "season-1",
+      "number": 1,
+      "title": "Foundations",
+      "description": "The beginning of an inward journey",
+      "year": "2025",
+      "episodes": [
+        {
+          "id": "s1-e01",
+          "seasonId": "season-1",
+          "episodeNumber": 1,
+          "title": "The Jedi, The Platypus, and Vulnerable Transparency",
+          "description": "A session exploring the difficulty of direct communication and the 'miracle trap' of wanting needs met without asking. The dialogue reframes vulnerability as a skill requiring practice, not a weakness to overcome.",
+          "date": "November 20, 2025",
+          "duration": "42:15",
+          "durationSeconds": 2535,
+          "audioUrl": "/audio/episode-01.m4a",
+          "videoUrl": "8bcoJihMinU",
+          "slides": []
+        },
+        {
+          "id": "s1-e02",
+          "seasonId": "season-1",
+          "episodeNumber": 2,
+          "title": "The Miracle Trap: Idealism, Will, and Vulnerability",
+          "description": "An intensive debate on the belief that true connection requires telepathic unity without verbal communication. The session explores the friction between metaphysical idealism and psychological pragmatism.",
+          "date": "November 24, 2025",
+          "duration": "38:42",
+          "durationSeconds": 2322,
+          "audioUrl": "/audio/episode-02.m4a",
+          "videoUrl": "6oskEmQB8OU",
+          "slides": []
+        },
+        {
+          "id": "s1-e03",
+          "seasonId": "season-1",
+          "episodeNumber": 3,
+          "title": "Becoming the Source: A Study in Liberated Will",
+          "description": "A transformative session on emotional dependency and the Will to Power. The client realizes that true strength lies not in forcing change, but in maintaining an unshakeable, truthful self.",
+          "date": "December 1, 2025",
+          "duration": "45:30",
+          "durationSeconds": 2730,
+          "audioUrl": "/audio/episode-03.m4a",
+          "videoUrl": "ogRiB36j8yA",
+          "slides": []
+        },
+        {
+          "id": "s1-e04",
+          "seasonId": "season-1",
+          "episodeNumber": 4,
+          "title": "The Anatomy of Trust and Relational Splitting",
+          "description": "A session processing intense distrust triggered by perceived dishonesty in a relationship. The dialogue traces the struggle to reconcile a partner's image with betrayal.",
+          "date": "December 3, 2025",
+          "duration": "41:18",
+          "durationSeconds": 2478,
+          "audioUrl": "/audio/episode-04.m4a",
+          "videoUrl": "59ofzUaUcQQ",
+          "slides": []
+        },
+        {
+          "id": "s1-e05",
+          "seasonId": "season-1",
+          "episodeNumber": 5,
+          "title": "The Great Split: Truth, Trust, and the Social Game",
+          "description": "A session on profound distrust and the fear of showing one's true self. The dialogue reveals a 'Great Split' between the vulnerable Child self and the powerful Emperor self.",
+          "date": "December 16, 2025",
+          "duration": "52:07",
+          "durationSeconds": 3127,
+          "audioUrl": "/audio/episode-05.m4a",
+          "videoUrl": "qbfv8ZaEAWg",
+          "slides": []
+        }
+      ]
+    }
+  ]
+}
