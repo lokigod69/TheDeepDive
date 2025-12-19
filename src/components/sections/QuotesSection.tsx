@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Quotes with mobile flag - some are excluded on mobile
+// Quotes with mobile flag - focused on shadow work, depth psychology, self-discovery
 const shadowQuotes = [
-  // Carl Jung
+  // Carl Jung - Shadow & Depth
   {
     text: "Until you make the unconscious conscious, it will direct your life and you will call it fate.",
     author: "Carl Jung",
@@ -21,11 +21,11 @@ const shadowQuotes = [
     showOnMobile: true
   },
   {
-    text: "We cannot change anything until we accept it.",
+    text: "Everything that irritates us about others can lead us to an understanding of ourselves.",
     author: "Carl Jung",
-    showOnMobile: false // shorter, less impactful
+    showOnMobile: true
   },
-  // Sigmund Freud
+  // Sigmund Freud - The Unconscious
   {
     text: "Out of your vulnerabilities will come your strength.",
     author: "Sigmund Freud",
@@ -37,35 +37,20 @@ const shadowQuotes = [
     showOnMobile: true
   },
   {
-    text: "Being entirely honest with oneself is a good exercise.",
-    author: "Sigmund Freud",
-    showOnMobile: false // shorter
-  },
-  {
     text: "The mind is like an iceberg, it floats with one-seventh of its bulk above water.",
     author: "Sigmund Freud",
     showOnMobile: true
   },
-  // Other psychoanalysts & thinkers
+  {
+    text: "Where does a thought go when it's forgotten?",
+    author: "Sigmund Freud",
+    showOnMobile: false
+  },
+  // Modern Depth Psychologists
   {
     text: "The curious paradox is that when I accept myself just as I am, then I can change.",
     author: "Carl Rogers",
     showOnMobile: true
-  },
-  {
-    text: "What is not brought to consciousness, comes to us as fate.",
-    author: "Carl Jung",
-    showOnMobile: false // similar to first quote
-  },
-  {
-    text: "The only person with whom you have to compare yourself is you in the past.",
-    author: "Sigmund Freud",
-    showOnMobile: true
-  },
-  {
-    text: "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
-    author: "Ralph Waldo Emerson",
-    showOnMobile: false // not psychoanalysis
   },
   {
     text: "Man's main task in life is to give birth to himself.",
@@ -73,19 +58,35 @@ const shadowQuotes = [
     showOnMobile: true
   },
   {
-    text: "The meeting of two personalities is like the contact of two chemical substances: if there is any reaction, both are transformed.",
+    text: "The only journey is the one within.",
+    author: "Rainer Maria Rilke",
+    showOnMobile: true
+  },
+  {
+    text: "Perhaps everything terrible is in its deepest being something helpless that wants help from us.",
+    author: "Rainer Maria Rilke",
+    showOnMobile: false
+  },
+  // Shadow Work & Integration
+  {
+    text: "The cave you fear to enter holds the treasure you seek.",
+    author: "Joseph Campbell",
+    showOnMobile: true
+  },
+  {
+    text: "No tree can grow to heaven unless its roots reach down to hell.",
     author: "Carl Jung",
-    showOnMobile: false // too long for mobile
+    showOnMobile: false
   },
   {
-    text: "Freedom is what we do with what is done to us.",
-    author: "Jean-Paul Sartre",
-    showOnMobile: false // not psychoanalysis
+    text: "Knowing your own darkness is the best method for dealing with the darknesses of other people.",
+    author: "Carl Jung",
+    showOnMobile: false
   },
   {
-    text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
-    author: "Aristotle",
-    showOnMobile: false // too generic, not psychoanalysis
+    text: "The wound is the place where the Light enters you.",
+    author: "Rumi",
+    showOnMobile: true
   },
 ];
 
@@ -219,47 +220,48 @@ export default function QuotesSection() {
             WebkitMaskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
           }}
         >
-          {/* Scattered quotes - spread across full width */}
+          {/* Scattered quotes - spread across full width, alternating left/right */}
           {displayQuotes.map((quote, index) => {
-            // Desktop positions - scattered layout
+            // Desktop positions - evenly distributed left and right
             const desktopPositions = [
-              // Row 1 - spread wide
-              { top: '2%', left: '2%' },
-              { top: '3%', left: '38%' },
-              { top: '1%', left: '72%' },
+              // Row 1
+              { top: '2%', left: '3%' },       // LEFT
+              { top: '4%', left: '60%' },      // RIGHT
               // Row 2
-              { top: '16%', left: '18%' },
-              { top: '14%', left: '55%' },
+              { top: '14%', left: '55%' },     // RIGHT
+              { top: '16%', left: '5%' },      // LEFT
               // Row 3
-              { top: '28%', left: '1%' },
-              { top: '30%', left: '35%' },
-              { top: '26%', left: '70%' },
+              { top: '26%', left: '2%' },      // LEFT
+              { top: '28%', left: '58%' },     // RIGHT
               // Row 4
-              { top: '42%', left: '15%' },
-              { top: '44%', left: '52%' },
+              { top: '38%', left: '62%' },     // RIGHT
+              { top: '40%', left: '4%' },      // LEFT
               // Row 5
-              { top: '56%', left: '2%' },
-              { top: '58%', left: '38%' },
-              { top: '54%', left: '72%' },
+              { top: '50%', left: '3%' },      // LEFT
+              { top: '52%', left: '60%' },     // RIGHT
               // Row 6
-              { top: '72%', left: '18%' },
-              { top: '70%', left: '55%' },
+              { top: '64%', left: '58%' },     // RIGHT
+              { top: '66%', left: '5%' },      // LEFT
               // Row 7
-              { top: '86%', left: '5%' },
+              { top: '76%', left: '2%' },      // LEFT
+              { top: '78%', left: '62%' },     // RIGHT
+              // Row 8
+              { top: '88%', left: '60%' },     // RIGHT
+              { top: '90%', left: '4%' },      // LEFT
             ];
 
-            // Mobile positions - vertical stacking, alternating left/right
+            // Mobile positions - vertical stacking
             const mobilePositions = [
               { top: '2%', left: '5%' },
-              { top: '12%', left: '10%' },
-              { top: '22%', left: '3%' },
-              { top: '32%', left: '8%' },
+              { top: '12%', left: '5%' },
+              { top: '22%', left: '5%' },
+              { top: '32%', left: '5%' },
               { top: '42%', left: '5%' },
-              { top: '52%', left: '10%' },
-              { top: '62%', left: '3%' },
-              { top: '72%', left: '8%' },
+              { top: '52%', left: '5%' },
+              { top: '62%', left: '5%' },
+              { top: '72%', left: '5%' },
               { top: '82%', left: '5%' },
-              { top: '92%', left: '10%' },
+              { top: '92%', left: '5%' },
             ];
 
             const positions = isMobile ? mobilePositions : desktopPositions;

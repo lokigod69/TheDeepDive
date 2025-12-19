@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
@@ -13,6 +13,9 @@ export default function HomePage() {
   const seasons = getAllSeasons();
   const allEpisodes = seasons.flatMap(s => s.episodes);
 
+  const mainRef = useRef<HTMLDivElement>(null);
+  const gradientRef = useRef<HTMLDivElement>(null);
+  const sunGlareRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
@@ -22,9 +25,21 @@ export default function HomePage() {
   const seasonHeaderRef = useRef<HTMLDivElement>(null);
   const episodesRef = useRef<HTMLDivElement>(null);
   const episodeCardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Diving gradient effect - track scroll progress
+      ScrollTrigger.create({
+        trigger: mainRef.current,
+        start: 'top top',
+        end: '+=2000', // Transition over first 2000px of scroll
+        scrub: true,
+        onUpdate: (self) => {
+          setScrollProgress(self.progress);
+        },
+      });
+
       // Hero title animation on load
       gsap.fromTo(
         titleRef.current,
@@ -54,15 +69,29 @@ export default function HomePage() {
         ease: 'power1.inOut',
       });
 
-      // Hero fades out as you scroll
+      // Hero fades and blurs out as you scroll (diving down)
       if (heroRef.current) {
         gsap.to(heroRef.current, {
           opacity: 0,
-          y: -50,
+          filter: 'blur(20px)',
+          scale: 0.9,
           scrollTrigger: {
             trigger: heroRef.current,
-            start: 'bottom 80%',
-            end: 'bottom 20%',
+            start: 'top top',
+            end: '+=600',
+            scrub: true,
+          },
+        });
+      }
+
+      // Sun glare fades out
+      if (sunGlareRef.current) {
+        gsap.to(sunGlareRef.current, {
+          opacity: 0,
+          scrollTrigger: {
+            trigger: mainRef.current,
+            start: 'top top',
+            end: '+=1000',
             scrub: true,
           },
         });
@@ -153,21 +182,77 @@ export default function HomePage() {
     return () => ctx.revert();
   }, []);
 
+  // Calculate gradient colors based on scroll progress
+  // Start: ocean blue surface, End: deep dark (--bg-deep)
+  const getGradientStyle = () => {
+    const p = scrollProgress;
+
+    // Surface colors (blue tones)
+    const surfaceTop = { h: 210, s: 60, l: 55 };      // Light blue
+    const surfaceMid = { h: 205, s: 50, l: 40 };      // Medium blue
+    const surfaceBot = { h: 215, s: 45, l: 20 };      // Dark blue
+
+    // Deep colors (warm black - matches --bg-deep #0D0B0A)
+    const deepTop = { h: 20, s: 15, l: 8 };
+    const deepMid = { h: 20, s: 10, l: 5 };
+    const deepBot = { h: 20, s: 8, l: 3 };
+
+    // Interpolate
+    const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
+
+    const topH = lerp(surfaceTop.h, deepTop.h, p);
+    const topS = lerp(surfaceTop.s, deepTop.s, p);
+    const topL = lerp(surfaceTop.l, deepTop.l, p);
+
+    const midH = lerp(surfaceMid.h, deepMid.h, p);
+    const midS = lerp(surfaceMid.s, deepMid.s, p);
+    const midL = lerp(surfaceMid.l, deepMid.l, p);
+
+    const botH = lerp(surfaceBot.h, deepBot.h, p);
+    const botS = lerp(surfaceBot.s, deepBot.s, p);
+    const botL = lerp(surfaceBot.l, deepBot.l, p);
+
+    return {
+      background: `linear-gradient(180deg,
+        hsl(${topH}, ${topS}%, ${topL}%) 0%,
+        hsl(${midH}, ${midS}%, ${midL}%) 50%,
+        hsl(${botH}, ${botS}%, ${botL}%) 100%
+      )`,
+    };
+  };
+
   return (
-    <main className="relative min-h-screen overflow-x-hidden" style={{ background: 'var(--bg-deep)' }}>
-      {/* Hero Section */}
+    <main ref={mainRef} className="relative min-h-screen overflow-x-hidden">
+      {/* Fixed gradient background - transitions from blue to dark as you scroll */}
+      <div
+        ref={gradientRef}
+        className="fixed inset-0 pointer-events-none transition-all duration-100"
+        style={getGradientStyle()}
+      />
+
+      {/* Sun glare effect - fades out as you dive */}
+      <div
+        ref={sunGlareRef}
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% -20%, rgba(255, 255, 220, 0.25) 0%, rgba(255, 255, 200, 0.1) 30%, transparent 60%)',
+        }}
+      />
+
+      {/* Vignette effect - intensifies as you dive */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          boxShadow: `inset 0 0 ${150 + scrollProgress * 100}px rgba(0, 0, 0, ${0.3 + scrollProgress * 0.4})`,
+        }}
+      />
+
+      {/* Hero Section - fixed position, fades/blurs out */}
       <section
         ref={heroRef}
-        className="relative flex flex-col justify-center items-center"
+        className="fixed inset-0 flex flex-col justify-center items-center z-10"
         style={{ minHeight: '100vh' }}
       >
-        {/* Subtle gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 40%, rgba(139, 157, 195, 0.03) 0%, transparent 60%)',
-          }}
-        />
 
         <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
           <h1
@@ -205,6 +290,9 @@ export default function HomePage() {
           ref={scrollIndicatorRef}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
+          <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>
+            SCROLL TO DIVE
+          </p>
           <svg
             width="16"
             height="24"
@@ -218,18 +306,21 @@ export default function HomePage() {
               width="14"
               height="22"
               rx="7"
-              stroke="var(--text-muted)"
+              stroke="rgba(255,255,255,0.5)"
               strokeWidth="1"
             />
-            <circle cx="8" cy="8" r="2" fill="var(--text-muted)" />
+            <circle cx="8" cy="8" r="2" fill="rgba(255,255,255,0.5)" />
           </svg>
         </div>
       </section>
 
+      {/* Spacer for hero - allows scrolling before content appears */}
+      <div style={{ height: '100vh' }} />
+
       {/* Intro Text Section */}
       <section
         ref={introSectionRef}
-        className="relative flex items-center justify-center"
+        className="relative flex items-center justify-center z-20"
         style={{ minHeight: '80vh' }}
       >
         <div
@@ -257,7 +348,7 @@ export default function HomePage() {
       </section>
 
       {/* Episodes Section */}
-      <section ref={episodesRef} className="py-32 px-6">
+      <section ref={episodesRef} className="relative py-32 px-6 z-20">
         <div className="max-w-5xl mx-auto">
           {/* Season Header */}
           <div ref={seasonHeaderRef} className="text-center mb-40">
@@ -388,7 +479,7 @@ export default function HomePage() {
       <QuotesSection />
 
       {/* Footer */}
-      <footer className="py-16 text-center">
+      <footer className="relative py-16 text-center z-20">
         <p
           className="mono"
           style={{ color: 'var(--text-muted)', fontSize: '11px' }}
