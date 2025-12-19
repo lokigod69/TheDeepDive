@@ -246,6 +246,76 @@ export default function HomePage() {
         }}
       />
 
+      {/* Ocean surface waves - looking up from below */}
+      <div
+        className="fixed top-0 left-0 right-0 pointer-events-none overflow-hidden"
+        style={{
+          height: '180px',
+          opacity: Math.max(0, 1 - scrollProgress * 3), // Fade out quickly as you dive
+        }}
+      >
+        {/* Wave layer 1 - lightest, closest to surface */}
+        <svg
+          className="absolute w-full"
+          style={{
+            top: '-20px',
+            height: '100px',
+            animation: 'wave1 8s ease-in-out infinite',
+          }}
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,50 C360,100 720,0 1080,50 C1260,75 1350,25 1440,50 L1440,0 L0,0 Z"
+            fill="rgba(200, 220, 255, 0.15)"
+          />
+        </svg>
+
+        {/* Wave layer 2 - middle */}
+        <svg
+          className="absolute w-full"
+          style={{
+            top: '-10px',
+            height: '80px',
+            animation: 'wave2 10s ease-in-out infinite',
+          }}
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,0 L0,0 Z"
+            fill="rgba(180, 210, 255, 0.12)"
+          />
+        </svg>
+
+        {/* Wave layer 3 - deepest, subtle */}
+        <svg
+          className="absolute w-full"
+          style={{
+            top: '10px',
+            height: '70px',
+            animation: 'wave3 12s ease-in-out infinite',
+          }}
+          viewBox="0 0 1440 70"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,35 C180,70 360,0 540,35 C720,70 900,0 1080,35 C1260,70 1350,0 1440,35 L1440,0 L0,0 Z"
+            fill="rgba(160, 200, 255, 0.08)"
+          />
+        </svg>
+
+        {/* Subtle shimmer line at very top */}
+        <div
+          className="absolute top-0 left-0 right-0"
+          style={{
+            height: '3px',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%, transparent 100%)',
+            animation: 'shimmer 4s ease-in-out infinite',
+          }}
+        />
+      </div>
+
       {/* Vignette effect - intensifies as you dive (with easing) */}
       <div
         className="fixed inset-0 pointer-events-none"

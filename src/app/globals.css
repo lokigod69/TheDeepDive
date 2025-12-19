@@ -360,3 +360,42 @@ button {
   right: 20px;
   opacity: 0.3;
 }
+
+/* Ocean Surface Wave Animations */
+@keyframes wave1 {
+  0%, 100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-3%) scaleY(1.1);
+  }
+}
+
+@keyframes wave2 {
+  0%, 100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(2%) scaleY(0.9);
+  }
+}
+
+@keyframes wave3 {
+  0%, 100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-1.5%) scaleY(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateX(-5%);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(5%);
+  }
+}
