@@ -186,44 +186,37 @@ export default function HomePage() {
   }, []);
 
   // Calculate gradient colors based on scroll progress
-  // Start: ocean blue surface, End: deep dark (--bg-deep)
-  // Uses easing so it stays blue longer, then darkens toward the shadow section
+  // Following FreeDiving-A approach: keep hue in blue range, decrease lightness
+  // Blue → deeper blue → very dark blue → black (no green/yellow transition)
   const getGradientStyle = () => {
-    // Apply easeInQuad - stays blue longer, then accelerates darkening
-    // This creates a more gradual "descent into the deep"
+    // Apply easing - stays blue longer, then accelerates darkening
     const easeInCubic = (t: number) => t * t * t;
     const p = easeInCubic(scrollProgress);
 
-    // Surface colors (blue tones) - starting point
-    const surfaceTop = { h: 210, s: 55, l: 50 };      // Light ocean blue
-    const surfaceMid = { h: 205, s: 45, l: 35 };      // Medium blue
-    const surfaceBot = { h: 215, s: 40, l: 18 };      // Dark blue
+    // Hue stays in blue range (200-210), slight shift toward cyan as you descend
+    // Like FreeDiving-A: hue = 200 - progress * 20 (stays ~180-200)
+    const hue = 205 - p * 15; // 205 → 190 (stays in blue-cyan range)
 
-    // Deep colors (warm black - matches --bg-deep #0D0B0A)
-    const deepTop = { h: 20, s: 15, l: 5 };
-    const deepMid = { h: 20, s: 10, l: 4 };
-    const deepBot = { h: 20, s: 8, l: 3 };
+    // Saturation: starts moderate, increases slightly mid-dive, then drops to 0
+    // Creates that deep ocean color before going black
+    const saturation = p < 0.7
+      ? 40 + p * 30  // 40% → 61% (richer blue as you descend)
+      : 70 - (p - 0.7) * 233; // 61% → 0% (desaturate to black at the end)
 
-    // Interpolate with eased progress
-    const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
+    // Lightness: the main driver of darkness
+    // Surface is bright, deep is near-black
+    const lightnessTop = 50 - p * 47;     // 50% → 3%
+    const lightnessMid = 35 - p * 32;     // 35% → 3%
+    const lightnessBot = 20 - p * 18;     // 20% → 2%
 
-    const topH = lerp(surfaceTop.h, deepTop.h, p);
-    const topS = lerp(surfaceTop.s, deepTop.s, p);
-    const topL = lerp(surfaceTop.l, deepTop.l, p);
-
-    const midH = lerp(surfaceMid.h, deepMid.h, p);
-    const midS = lerp(surfaceMid.s, deepMid.s, p);
-    const midL = lerp(surfaceMid.l, deepMid.l, p);
-
-    const botH = lerp(surfaceBot.h, deepBot.h, p);
-    const botS = lerp(surfaceBot.s, deepBot.s, p);
-    const botL = lerp(surfaceBot.l, deepBot.l, p);
+    // Clamp saturation to avoid negative
+    const clampedSat = Math.max(0, saturation);
 
     return {
       background: `linear-gradient(180deg,
-        hsl(${topH}, ${topS}%, ${topL}%) 0%,
-        hsl(${midH}, ${midS}%, ${midL}%) 50%,
-        hsl(${botH}, ${botS}%, ${botL}%) 100%
+        hsl(${hue}, ${clampedSat}%, ${Math.max(2, lightnessTop)}%) 0%,
+        hsl(${hue + 5}, ${clampedSat}%, ${Math.max(2, lightnessMid)}%) 50%,
+        hsl(${hue + 10}, ${Math.max(0, clampedSat - 10)}%, ${Math.max(1, lightnessBot)}%) 100%
       )`,
     };
   };
@@ -250,24 +243,24 @@ export default function HomePage() {
       <div
         className="fixed top-0 left-0 right-0 pointer-events-none overflow-hidden"
         style={{
-          height: '180px',
-          opacity: Math.max(0, 1 - scrollProgress * 3), // Fade out quickly as you dive
+          height: '320px',
+          opacity: Math.max(0, 1 - scrollProgress * 2.5), // Fade out as you dive
         }}
       >
         {/* Wave layer 1 - lightest, closest to surface */}
         <svg
           className="absolute w-full"
           style={{
-            top: '-20px',
-            height: '100px',
+            top: '-30px',
+            height: '160px',
             animation: 'wave1 8s ease-in-out infinite',
           }}
-          viewBox="0 0 1440 100"
+          viewBox="0 0 1440 160"
           preserveAspectRatio="none"
         >
           <path
-            d="M0,50 C360,100 720,0 1080,50 C1260,75 1350,25 1440,50 L1440,0 L0,0 Z"
-            fill="rgba(200, 220, 255, 0.15)"
+            d="M0,80 C360,160 720,0 1080,80 C1260,120 1350,40 1440,80 L1440,0 L0,0 Z"
+            fill="rgba(180, 210, 255, 0.2)"
           />
         </svg>
 
@@ -275,43 +268,54 @@ export default function HomePage() {
         <svg
           className="absolute w-full"
           style={{
-            top: '-10px',
-            height: '80px',
+            top: '0px',
+            height: '130px',
             animation: 'wave2 10s ease-in-out infinite',
           }}
-          viewBox="0 0 1440 80"
+          viewBox="0 0 1440 130"
           preserveAspectRatio="none"
         >
           <path
-            d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,0 L0,0 Z"
-            fill="rgba(180, 210, 255, 0.12)"
+            d="M0,65 C240,130 480,0 720,65 C960,130 1200,0 1440,65 L1440,0 L0,0 Z"
+            fill="rgba(160, 195, 255, 0.15)"
           />
         </svg>
 
-        {/* Wave layer 3 - deepest, subtle */}
+        {/* Wave layer 3 - deepest wave */}
         <svg
           className="absolute w-full"
           style={{
-            top: '10px',
-            height: '70px',
+            top: '40px',
+            height: '120px',
             animation: 'wave3 12s ease-in-out infinite',
           }}
-          viewBox="0 0 1440 70"
+          viewBox="0 0 1440 120"
           preserveAspectRatio="none"
         >
           <path
-            d="M0,35 C180,70 360,0 540,35 C720,70 900,0 1080,35 C1260,70 1350,0 1440,35 L1440,0 L0,0 Z"
-            fill="rgba(160, 200, 255, 0.08)"
+            d="M0,60 C180,120 360,0 540,60 C720,120 900,0 1080,60 C1260,120 1350,0 1440,60 L1440,0 L0,0 Z"
+            fill="rgba(140, 180, 255, 0.1)"
           />
         </svg>
 
-        {/* Subtle shimmer line at very top */}
+        {/* Shimmer line at very top - brighter */}
         <div
           className="absolute top-0 left-0 right-0"
           style={{
-            height: '3px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%, transparent 100%)',
+            height: '4px',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 80%, transparent 100%)',
             animation: 'shimmer 4s ease-in-out infinite',
+          }}
+        />
+
+        {/* Secondary shimmer for depth */}
+        <div
+          className="absolute left-0 right-0"
+          style={{
+            top: '8px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent 10%, rgba(200,220,255,0.3) 30%, rgba(200,220,255,0.5) 50%, rgba(200,220,255,0.3) 70%, transparent 90%)',
+            animation: 'shimmer 6s ease-in-out infinite reverse',
           }}
         />
       </div>
@@ -337,14 +341,20 @@ export default function HomePage() {
             style={{
               fontFamily: 'var(--font-serif), Georgia, serif',
               fontSize: 'clamp(3.5rem, 10vw, 7rem)',
-              color: 'var(--text-primary)',
               fontWeight: 400,
               lineHeight: 1.0,
               letterSpacing: '-0.02em',
             }}
           >
-            The{' '}
-            <span className="title-accent">Deep Dive</span>
+            <span style={{ color: 'rgba(255, 255, 255, 0.95)' }}>The</span>{' '}
+            <span
+              style={{
+                fontStyle: 'italic',
+                color: 'rgba(200, 225, 255, 0.95)', // Light ocean blue that matches the water
+              }}
+            >
+              Deep Dive
+            </span>
           </h1>
 
           <p
@@ -352,8 +362,8 @@ export default function HomePage() {
             className="mt-6"
             style={{
               fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-              color: 'var(--text-muted)',
-              letterSpacing: '0.15em',
+              color: 'rgba(255, 255, 255, 0.55)', // Softer white, more readable than muted gray
+              letterSpacing: '0.2em',
               textTransform: 'uppercase',
               fontFamily: 'var(--font-mono), monospace',
             }}
