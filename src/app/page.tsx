@@ -25,15 +25,18 @@ export default function HomePage() {
   const seasonHeaderRef = useRef<HTMLDivElement>(null);
   const episodesRef = useRef<HTMLDivElement>(null);
   const episodeCardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const quotesSectionRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Diving gradient effect - track scroll progress
+      // Transition completes when THE SHADOW section is reached
       ScrollTrigger.create({
         trigger: mainRef.current,
         start: 'top top',
-        end: '+=2000', // Transition over first 2000px of scroll
+        endTrigger: quotesSectionRef.current,
+        end: 'top center', // Gradient completes when quotes section reaches center
         scrub: true,
         onUpdate: (self) => {
           setScrollProgress(self.progress);
@@ -84,14 +87,14 @@ export default function HomePage() {
         });
       }
 
-      // Sun glare fades out
+      // Sun glare fades out more gradually
       if (sunGlareRef.current) {
         gsap.to(sunGlareRef.current, {
           opacity: 0,
           scrollTrigger: {
             trigger: mainRef.current,
             start: 'top top',
-            end: '+=1000',
+            end: '+=2500', // Fade over 2500px for subtler effect
             scrub: true,
           },
         });
@@ -184,20 +187,24 @@ export default function HomePage() {
 
   // Calculate gradient colors based on scroll progress
   // Start: ocean blue surface, End: deep dark (--bg-deep)
+  // Uses easing so it stays blue longer, then darkens toward the shadow section
   const getGradientStyle = () => {
-    const p = scrollProgress;
+    // Apply easeInQuad - stays blue longer, then accelerates darkening
+    // This creates a more gradual "descent into the deep"
+    const easeInCubic = (t: number) => t * t * t;
+    const p = easeInCubic(scrollProgress);
 
-    // Surface colors (blue tones)
-    const surfaceTop = { h: 210, s: 60, l: 55 };      // Light blue
-    const surfaceMid = { h: 205, s: 50, l: 40 };      // Medium blue
-    const surfaceBot = { h: 215, s: 45, l: 20 };      // Dark blue
+    // Surface colors (blue tones) - starting point
+    const surfaceTop = { h: 210, s: 55, l: 50 };      // Light ocean blue
+    const surfaceMid = { h: 205, s: 45, l: 35 };      // Medium blue
+    const surfaceBot = { h: 215, s: 40, l: 18 };      // Dark blue
 
     // Deep colors (warm black - matches --bg-deep #0D0B0A)
-    const deepTop = { h: 20, s: 15, l: 8 };
-    const deepMid = { h: 20, s: 10, l: 5 };
+    const deepTop = { h: 20, s: 15, l: 5 };
+    const deepMid = { h: 20, s: 10, l: 4 };
     const deepBot = { h: 20, s: 8, l: 3 };
 
-    // Interpolate
+    // Interpolate with eased progress
     const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
 
     const topH = lerp(surfaceTop.h, deepTop.h, p);
@@ -239,11 +246,11 @@ export default function HomePage() {
         }}
       />
 
-      {/* Vignette effect - intensifies as you dive */}
+      {/* Vignette effect - intensifies as you dive (with easing) */}
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          boxShadow: `inset 0 0 ${150 + scrollProgress * 100}px rgba(0, 0, 0, ${0.3 + scrollProgress * 0.4})`,
+          boxShadow: `inset 0 0 ${150 + Math.pow(scrollProgress, 2) * 150}px rgba(0, 0, 0, ${0.2 + Math.pow(scrollProgress, 2) * 0.5})`,
         }}
       />
 
@@ -475,8 +482,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Quotes Section - Dark exploration with spotlight */}
-      <QuotesSection />
+      {/* Quotes Section - THE SHADOW - Dark exploration with spotlight */}
+      <div ref={quotesSectionRef}>
+        <QuotesSection />
+      </div>
 
       {/* Footer */}
       <footer className="relative py-16 text-center z-20">
