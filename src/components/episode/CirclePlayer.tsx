@@ -256,27 +256,53 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
         </svg>
       </motion.button>
 
-      {/* Progress bar */}
+      {/* Progress bar - with larger touch target */}
       <div className="w-full max-w-md mt-8">
         <div
-          className="relative h-1 rounded-full cursor-pointer"
-          style={{ background: 'var(--border-subtle)' }}
+          className="relative h-8 flex items-center cursor-pointer touch-none"
           onClick={handleSeek}
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(1, x / rect.width));
+            if (audioRef.current && actualDuration > 0) {
+              const newTime = percentage * actualDuration;
+              audioRef.current.currentTime = newTime;
+              setCurrentTime(newTime);
+            }
+          }}
+          onTouchMove={(e) => {
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(1, x / rect.width));
+            if (audioRef.current && actualDuration > 0) {
+              const newTime = percentage * actualDuration;
+              audioRef.current.currentTime = newTime;
+              setCurrentTime(newTime);
+            }
+          }}
         >
+          {/* Visual track - thin line */}
+          <div
+            className="absolute left-0 right-0 h-1 rounded-full"
+            style={{ background: 'var(--border-subtle)' }}
+          />
           <motion.div
-            className="absolute left-0 top-0 h-full rounded-full"
+            className="absolute left-0 h-1 rounded-full"
             style={{
               background: 'var(--accent-primary)',
               width: `${progress}%`,
             }}
             transition={{ duration: 0.1 }}
           />
-          {/* Playhead dot */}
+          {/* Playhead dot - larger for touch */}
           <motion.div
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full"
+            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 md:w-3 md:h-3 rounded-full"
             style={{
               background: 'var(--accent-primary)',
-              left: `calc(${progress}% - 6px)`,
+              left: `calc(${progress}% - 8px)`,
               boxShadow: '0 0 8px var(--accent-glow)',
             }}
             transition={{ duration: 0.1 }}

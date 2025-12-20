@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, EB_Garamond } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,20 @@ const ebGaramond = EB_Garamond({
 export const metadata: Metadata = {
   title: "Psychoanalysis Sessions | The Deep Dive",
   description: "Reflections on self. An audio-first exploration of consciousness.",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.svg',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#0A0A0A',
 };
 
 export default function RootLayout({

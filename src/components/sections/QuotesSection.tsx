@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 // Quotes with mobile flag - focused on shadow work, depth psychology, self-discovery
 const shadowQuotes = [
@@ -95,15 +95,46 @@ export default function QuotesSection() {
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [touchActive, setTouchActive] = useState(false);
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Detect mobile on mount
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      // Check for touch capability as well as screen size
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      setIsMobile(window.innerWidth < 768 || isTouchDevice);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle touch with proper coordinates
+  const handleTouch = useCallback((clientX: number, clientY: number) => {
+    const container = quotesContainerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    // Account for scroll position
+    const x = clientX - rect.left;
+    const y = clientY - rect.top + container.scrollTop;
+
+    setMousePos({ x, y });
+    setIsHovering(true);
+    setTouchActive(true);
+
+    // Clear any existing timeout
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+    }
+
+    // Keep spotlight visible for 2.5 seconds after last touch
+    touchTimeoutRef.current = setTimeout(() => {
+      setIsHovering(false);
+      setTouchActive(false);
+      setMousePos({ x: -1000, y: -1000 });
+    }, 2500);
   }, []);
 
   useEffect(() => {
@@ -112,6 +143,7 @@ export default function QuotesSection() {
 
     // Mouse events for desktop
     const handleMouseMove = (e: MouseEvent) => {
+      if (isMobile) return; // Skip mouse events on mobile
       const rect = container.getBoundingClientRect();
       setMousePos({
         x: e.clientX - rect.left,
@@ -119,38 +151,25 @@ export default function QuotesSection() {
       });
     };
 
-    const handleMouseEnter = () => setIsHovering(true);
+    const handleMouseEnter = () => {
+      if (!isMobile) setIsHovering(true);
+    };
     const handleMouseLeave = () => {
-      setIsHovering(false);
-      setMousePos({ x: -1000, y: -1000 });
+      if (!isMobile) {
+        setIsHovering(false);
+        setMousePos({ x: -1000, y: -1000 });
+      }
     };
 
     // Touch events for mobile - tap to illuminate
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
-      const rect = container.getBoundingClientRect();
-      setMousePos({
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top,
-      });
-      setIsHovering(true);
+      handleTouch(touch.clientX, touch.clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
-      const rect = container.getBoundingClientRect();
-      setMousePos({
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top,
-      });
-    };
-
-    const handleTouchEnd = () => {
-      // Keep the light on for a moment after touch ends
-      setTimeout(() => {
-        setIsHovering(false);
-        setMousePos({ x: -1000, y: -1000 });
-      }, 1500);
+      handleTouch(touch.clientX, touch.clientY);
     };
 
     container.addEventListener('mousemove', handleMouseMove);
@@ -158,7 +177,6 @@ export default function QuotesSection() {
     container.addEventListener('mouseleave', handleMouseLeave);
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       container.removeEventListener('mousemove', handleMouseMove);
@@ -166,9 +184,11 @@ export default function QuotesSection() {
       container.removeEventListener('mouseleave', handleMouseLeave);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [isMobile, handleTouch]);
 
   // Filter quotes for mobile
   const displayQuotes = isMobile
@@ -199,8 +219,34 @@ export default function QuotesSection() {
             opacity: 0.5,
           }}
         >
-          {isMobile ? 'Tap to illuminate hidden wisdom' : 'Move your cursor to illuminate hidden wisdom'}
+          {isMobile ? 'Tap anywhere to illuminate hidden wisdom' : 'Move your cursor to illuminate hidden wisdom'}
         </p>
+
+        {/* Mobile tap indicator - pulsing circle */}
+        {isMobile && !touchActive && (
+          <div
+            className="mx-auto mt-6"
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              border: '2px solid rgba(139, 157, 195, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              animation: 'pulse 2s ease-in-out infinite',
+            }}
+          >
+            <div
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: 'rgba(139, 157, 195, 0.6)',
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Quotes container - this is where mouse tracking happens */}
