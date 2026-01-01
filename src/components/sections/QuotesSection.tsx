@@ -90,13 +90,22 @@ const shadowQuotes = [
   },
 ];
 
+// Threshold for distinguishing tap from scroll (in pixels)
+const TAP_THRESHOLD = 15;
+// Long press duration (in ms)
+const LONG_PRESS_DURATION = 300;
+
 export default function QuotesSection() {
   const quotesContainerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [touchActive, setTouchActive] = useState(false);
-  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Touch tracking refs
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const spotlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Detect mobile on mount
   useEffect(() => {
@@ -110,27 +119,26 @@ export default function QuotesSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Handle touch with proper coordinates
-  const handleTouch = useCallback((clientX: number, clientY: number) => {
+  // Activate spotlight at a position
+  const activateSpotlight = useCallback((clientX: number, clientY: number) => {
     const container = quotesContainerRef.current;
     if (!container) return;
 
     const rect = container.getBoundingClientRect();
-    // Account for scroll position
     const x = clientX - rect.left;
-    const y = clientY - rect.top + container.scrollTop;
+    const y = clientY - rect.top;
 
     setMousePos({ x, y });
     setIsHovering(true);
     setTouchActive(true);
 
-    // Clear any existing timeout
-    if (touchTimeoutRef.current) {
-      clearTimeout(touchTimeoutRef.current);
+    // Clear any existing spotlight timeout
+    if (spotlightTimeoutRef.current) {
+      clearTimeout(spotlightTimeoutRef.current);
     }
 
-    // Keep spotlight visible for 2.5 seconds after last touch
-    touchTimeoutRef.current = setTimeout(() => {
+    // Keep spotlight visible for 2.5 seconds
+    spotlightTimeoutRef.current = setTimeout(() => {
       setIsHovering(false);
       setTouchActive(false);
       setMousePos({ x: -1000, y: -1000 });
@@ -143,7 +151,7 @@ export default function QuotesSection() {
 
     // Mouse events for desktop
     const handleMouseMove = (e: MouseEvent) => {
-      if (isMobile) return; // Skip mouse events on mobile
+      if (isMobile) return;
       const rect = container.getBoundingClientRect();
       setMousePos({
         x: e.clientX - rect.left,
@@ -154,6 +162,7 @@ export default function QuotesSection() {
     const handleMouseEnter = () => {
       if (!isMobile) setIsHovering(true);
     };
+    
     const handleMouseLeave = () => {
       if (!isMobile) {
         setIsHovering(false);
@@ -161,15 +170,74 @@ export default function QuotesSection() {
       }
     };
 
-    // Touch events for mobile - tap to illuminate
+    // Mobile touch events - distinguish tap/long-press from scroll
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
-      handleTouch(touch.clientX, touch.clientY);
+      touchStartRef.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+        time: Date.now(),
+      };
+
+      // Start long-press timer
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+      }
+      
+      longPressTimeoutRef.current = setTimeout(() => {
+        // Long press detected - activate spotlight
+        if (touchStartRef.current) {
+          activateSpotlight(touchStartRef.current.x, touchStartRef.current.y);
+        }
+      }, LONG_PRESS_DURATION);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current) return;
+      
       const touch = e.touches[0];
-      handleTouch(touch.clientX, touch.clientY);
+      const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+      const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+      
+      // If finger moved beyond threshold, it's a scroll - cancel long-press
+      if (deltaX > TAP_THRESHOLD || deltaY > TAP_THRESHOLD) {
+        if (longPressTimeoutRef.current) {
+          clearTimeout(longPressTimeoutRef.current);
+          longPressTimeoutRef.current = null;
+        }
+        touchStartRef.current = null; // Mark as scroll, not tap
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      // Cancel long-press timer
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+
+      // Check if this was a tap (not a scroll)
+      if (touchStartRef.current) {
+        const touch = e.changedTouches[0];
+        const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+        const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+        const duration = Date.now() - touchStartRef.current.time;
+
+        // Quick tap (less than 300ms and didn't move much)
+        if (deltaX < TAP_THRESHOLD && deltaY < TAP_THRESHOLD && duration < LONG_PRESS_DURATION) {
+          activateSpotlight(touch.clientX, touch.clientY);
+        }
+      }
+
+      touchStartRef.current = null;
+    };
+
+    const handleTouchCancel = () => {
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+      touchStartRef.current = null;
     };
 
     container.addEventListener('mousemove', handleMouseMove);
@@ -177,6 +245,8 @@ export default function QuotesSection() {
     container.addEventListener('mouseleave', handleMouseLeave);
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       container.removeEventListener('mousemove', handleMouseMove);
@@ -184,16 +254,24 @@ export default function QuotesSection() {
       container.removeEventListener('mouseleave', handleMouseLeave);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
-      if (touchTimeoutRef.current) {
-        clearTimeout(touchTimeoutRef.current);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchCancel);
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+      }
+      if (spotlightTimeoutRef.current) {
+        clearTimeout(spotlightTimeoutRef.current);
       }
     };
-  }, [isMobile, handleTouch]);
+  }, [isMobile, activateSpotlight]);
 
   // Filter quotes for mobile
   const displayQuotes = isMobile
     ? shadowQuotes.filter(q => q.showOnMobile)
     : shadowQuotes;
+
+  // Calculate the number of quotes and spacing for mobile
+  const mobileQuoteCount = displayQuotes.length;
 
   return (
     <section
@@ -219,7 +297,7 @@ export default function QuotesSection() {
             opacity: 0.5,
           }}
         >
-          {isMobile ? 'Tap anywhere to illuminate hidden wisdom' : 'Move your cursor to illuminate hidden wisdom'}
+          {isMobile ? 'Tap or hold to illuminate hidden wisdom' : 'Move your cursor to illuminate hidden wisdom'}
         </p>
 
         {/* Mobile tap indicator - pulsing circle */}
@@ -249,12 +327,13 @@ export default function QuotesSection() {
         )}
       </div>
 
-      {/* Quotes container - this is where mouse tracking happens */}
+      {/* Quotes container */}
       <div
         ref={quotesContainerRef}
         className={`relative w-full ${isMobile ? '' : 'cursor-none'}`}
         style={{
-          height: isMobile ? '2000px' : '1000px',
+          // On mobile, calculate height based on number of quotes with generous spacing
+          height: isMobile ? `${mobileQuoteCount * 180}px` : '1000px',
           padding: isMobile ? '0 1.5rem' : '0 3rem',
         }}
       >
@@ -266,52 +345,69 @@ export default function QuotesSection() {
             WebkitMaskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
           }}
         >
-          {/* Scattered quotes - spread across full width, alternating left/right */}
+          {/* Quotes layout */}
           {displayQuotes.map((quote, index) => {
             // Desktop positions - evenly distributed left and right
             const desktopPositions = [
-              // Row 1
-              { top: '2%', left: '3%' },       // LEFT
-              { top: '4%', left: '60%' },      // RIGHT
-              // Row 2
-              { top: '14%', left: '55%' },     // RIGHT
-              { top: '16%', left: '5%' },      // LEFT
-              // Row 3
-              { top: '26%', left: '2%' },      // LEFT
-              { top: '28%', left: '58%' },     // RIGHT
-              // Row 4
-              { top: '38%', left: '62%' },     // RIGHT
-              { top: '40%', left: '4%' },      // LEFT
-              // Row 5
-              { top: '50%', left: '3%' },      // LEFT
-              { top: '52%', left: '60%' },     // RIGHT
-              // Row 6
-              { top: '64%', left: '58%' },     // RIGHT
-              { top: '66%', left: '5%' },      // LEFT
-              // Row 7
-              { top: '76%', left: '2%' },      // LEFT
-              { top: '78%', left: '62%' },     // RIGHT
-              // Row 8
-              { top: '88%', left: '60%' },     // RIGHT
-              { top: '90%', left: '4%' },      // LEFT
+              { top: '2%', left: '3%' },
+              { top: '4%', left: '60%' },
+              { top: '14%', left: '55%' },
+              { top: '16%', left: '5%' },
+              { top: '26%', left: '2%' },
+              { top: '28%', left: '58%' },
+              { top: '38%', left: '62%' },
+              { top: '40%', left: '4%' },
+              { top: '50%', left: '3%' },
+              { top: '52%', left: '60%' },
+              { top: '64%', left: '58%' },
+              { top: '66%', left: '5%' },
+              { top: '76%', left: '2%' },
+              { top: '78%', left: '62%' },
+              { top: '88%', left: '60%' },
+              { top: '90%', left: '4%' },
             ];
 
-            // Mobile positions - vertical stacking
-            const mobilePositions = [
-              { top: '2%', left: '5%' },
-              { top: '12%', left: '5%' },
-              { top: '22%', left: '5%' },
-              { top: '32%', left: '5%' },
-              { top: '42%', left: '5%' },
-              { top: '52%', left: '5%' },
-              { top: '62%', left: '5%' },
-              { top: '72%', left: '5%' },
-              { top: '82%', left: '5%' },
-              { top: '92%', left: '5%' },
-            ];
+            if (isMobile) {
+              // Mobile: fixed pixel positioning for consistent vertical stacking
+              const topPx = 40 + index * 180; // 40px start, 180px between each quote
+              
+              return (
+                <div
+                  key={index}
+                  className="absolute"
+                  style={{
+                    top: `${topPx}px`,
+                    left: '5%',
+                    right: '5%',
+                    maxWidth: '90%',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-serif), Georgia, serif',
+                      fontSize: '1rem',
+                      fontStyle: 'italic',
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.75,
+                    }}
+                  >
+                    &ldquo;{quote.text}&rdquo;
+                  </p>
+                  <p
+                    className="mt-3"
+                    style={{
+                      fontSize: '0.85rem',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    — {quote.author}
+                  </p>
+                </div>
+              );
+            }
 
-            const positions = isMobile ? mobilePositions : desktopPositions;
-            const pos = positions[index % positions.length];
+            // Desktop layout
+            const pos = desktopPositions[index % desktopPositions.length];
 
             return (
               <div
@@ -320,13 +416,13 @@ export default function QuotesSection() {
                 style={{
                   top: pos.top,
                   left: pos.left,
-                  maxWidth: isMobile ? '85%' : '300px',
+                  maxWidth: '300px',
                 }}
               >
                 <p
                   style={{
                     fontFamily: 'var(--font-serif), Georgia, serif',
-                    fontSize: isMobile ? '1rem' : '1.15rem',
+                    fontSize: '1.15rem',
                     fontStyle: 'italic',
                     color: 'var(--text-secondary)',
                     lineHeight: 1.75,
@@ -337,7 +433,7 @@ export default function QuotesSection() {
                 <p
                   className="mt-3"
                   style={{
-                    fontSize: isMobile ? '0.85rem' : 'var(--type-body)',
+                    fontSize: 'var(--type-body)',
                     color: 'var(--text-muted)',
                   }}
                 >
@@ -348,7 +444,7 @@ export default function QuotesSection() {
           })}
         </div>
 
-        {/* Spotlight glow effect following cursor/touch - brighter and more even */}
+        {/* Spotlight glow effect following cursor/touch */}
         {isHovering && (
           <div
             className="absolute pointer-events-none"
