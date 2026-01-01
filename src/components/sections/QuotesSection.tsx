@@ -91,9 +91,11 @@ const shadowQuotes = [
 ];
 
 // Threshold for distinguishing tap from scroll (in pixels)
-const TAP_THRESHOLD = 15;
+const TAP_THRESHOLD = 20;
 // Long press duration (in ms)
 const LONG_PRESS_DURATION = 300;
+// Scroll debounce time - ignore taps within this time after scrolling
+const SCROLL_DEBOUNCE_MS = 200;
 
 export default function QuotesSection() {
   const quotesContainerRef = useRef<HTMLDivElement>(null);
@@ -101,10 +103,14 @@ export default function QuotesSection() {
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [touchActive, setTouchActive] = useState(false);
-  
+
   // Touch tracking refs
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Scroll tracking refs for improved gesture distinction
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const spotlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Detect mobile on mount
@@ -162,7 +168,7 @@ export default function QuotesSection() {
     const handleMouseEnter = () => {
       if (!isMobile) setIsHovering(true);
     };
-    
+
     const handleMouseLeave = () => {
       if (!isMobile) {
         setIsHovering(false);
@@ -183,10 +189,10 @@ export default function QuotesSection() {
       if (longPressTimeoutRef.current) {
         clearTimeout(longPressTimeoutRef.current);
       }
-      
+
       longPressTimeoutRef.current = setTimeout(() => {
-        // Long press detected - activate spotlight
-        if (touchStartRef.current) {
+        // Long press detected - activate spotlight (only if not scrolling)
+        if (touchStartRef.current && !isScrollingRef.current) {
           activateSpotlight(touchStartRef.current.x, touchStartRef.current.y);
         }
       }, LONG_PRESS_DURATION);
@@ -194,11 +200,11 @@ export default function QuotesSection() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!touchStartRef.current) return;
-      
+
       const touch = e.touches[0];
       const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
       const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-      
+
       // If finger moved beyond threshold, it's a scroll - cancel long-press
       if (deltaX > TAP_THRESHOLD || deltaY > TAP_THRESHOLD) {
         if (longPressTimeoutRef.current) {
@@ -223,8 +229,8 @@ export default function QuotesSection() {
         const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
         const duration = Date.now() - touchStartRef.current.time;
 
-        // Quick tap (less than 300ms and didn't move much)
-        if (deltaX < TAP_THRESHOLD && deltaY < TAP_THRESHOLD && duration < LONG_PRESS_DURATION) {
+        // Quick tap (less than 300ms and didn't move much, and not during/after scroll)
+        if (deltaX < TAP_THRESHOLD && deltaY < TAP_THRESHOLD && duration < LONG_PRESS_DURATION && !isScrollingRef.current) {
           activateSpotlight(touch.clientX, touch.clientY);
         }
       }
@@ -240,6 +246,27 @@ export default function QuotesSection() {
       touchStartRef.current = null;
     };
 
+    // Scroll event handler to track scrolling state
+    const handleScroll = () => {
+      isScrollingRef.current = true;
+
+      // Cancel any pending long-press during scroll
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+
+      // Clear previous scroll timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Set scrolling to false after debounce period
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+      }, SCROLL_DEBOUNCE_MS);
+    };
+
     container.addEventListener('mousemove', handleMouseMove);
     container.addEventListener('mouseenter', handleMouseEnter);
     container.addEventListener('mouseleave', handleMouseLeave);
@@ -247,6 +274,7 @@ export default function QuotesSection() {
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
     container.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+    container.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       container.removeEventListener('mousemove', handleMouseMove);
@@ -256,8 +284,12 @@ export default function QuotesSection() {
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchCancel);
+      container.removeEventListener('scroll', handleScroll);
       if (longPressTimeoutRef.current) {
         clearTimeout(longPressTimeoutRef.current);
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
       }
       if (spotlightTimeoutRef.current) {
         clearTimeout(spotlightTimeoutRef.current);
@@ -332,17 +364,25 @@ export default function QuotesSection() {
         ref={quotesContainerRef}
         className={`relative w-full ${isMobile ? '' : 'cursor-none'}`}
         style={{
-          // On mobile, calculate height based on number of quotes with generous spacing
-          height: isMobile ? `${mobileQuoteCount * 180}px` : '1000px',
+          // On mobile, use scrollable container with max-height
+          height: isMobile ? 'auto' : '1000px',
+          maxHeight: isMobile ? '70vh' : 'none',
+          overflowY: isMobile ? 'auto' : 'visible',
+          overflowX: 'hidden',
           padding: isMobile ? '0 1.5rem' : '0 3rem',
+          // Hide scrollbar but keep functionality
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
       >
         {/* The actual quotes - always rendered but masked */}
         <div
-          className="absolute inset-0"
+          className={isMobile ? 'relative' : 'absolute inset-0'}
           style={{
             maskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
             WebkitMaskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
+            // Mobile: use flex column layout for vertical stacking
+            ...(isMobile ? { display: 'flex', flexDirection: 'column' as const, gap: '2.5rem', paddingBottom: '4rem' } : {}),
           }}
         >
           {/* Quotes layout */}
@@ -368,18 +408,14 @@ export default function QuotesSection() {
             ];
 
             if (isMobile) {
-              // Mobile: fixed pixel positioning for consistent vertical stacking
-              const topPx = 40 + index * 180; // 40px start, 180px between each quote
-              
+              // Mobile: use relative positioning within flex container for natural vertical flow
               return (
                 <div
                   key={index}
-                  className="absolute"
+                  className="relative"
                   style={{
-                    top: `${topPx}px`,
-                    left: '5%',
-                    right: '5%',
-                    maxWidth: '90%',
+                    width: '100%',
+                    flexShrink: 0,
                   }}
                 >
                   <p

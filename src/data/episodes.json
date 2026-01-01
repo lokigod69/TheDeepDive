@@ -71,6 +71,35 @@
           "audioUrl": "/audio/episode-05.m4a",
           "videoUrl": "qbfv8ZaEAWg",
           "slides": []
+        },
+        {
+          "id": "s1-e06",
+          "seasonId": "season-1",
+          "episodeNumber": 6,
+          "title": "White Room to the World",
+          "description": "A transformative session exploring the journey from isolation to connection. The dialogue examines the transition from internal sanctuary to authentic engagement with the external world.",
+          "date": "January 2, 2026",
+          "duration": "45:00",
+          "durationSeconds": 2700,
+          "audioUrl": "/audio/episode-06.m4a",
+          "videoUrl": "F0OlFbH4idQ",
+          "slides": [
+            "/slides/s1-e06/slide-01.png",
+            "/slides/s1-e06/slide-02.png",
+            "/slides/s1-e06/slide-03.png",
+            "/slides/s1-e06/slide-04.png",
+            "/slides/s1-e06/slide-05.png",
+            "/slides/s1-e06/slide-06.png",
+            "/slides/s1-e06/slide-07.png",
+            "/slides/s1-e06/slide-08.png",
+            "/slides/s1-e06/slide-09.png",
+            "/slides/s1-e06/slide-10.png",
+            "/slides/s1-e06/slide-11.png",
+            "/slides/s1-e06/slide-12.png",
+            "/slides/s1-e06/slide-13.png",
+            "/slides/s1-e06/slide-14.png",
+            "/slides/s1-e06/slide-15.png"
+          ]
         }
       ]
     }
