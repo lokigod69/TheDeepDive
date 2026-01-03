@@ -11,7 +11,7 @@ export interface Episode {
   durationSeconds: number;
   audioUrl: string;
   videoUrl?: string; // YouTube video ID or URL
-  slides?: Slide[];
+  slides?: string[]; // URL paths to slide images
   transcript?: TranscriptSegment[];
 }
 
