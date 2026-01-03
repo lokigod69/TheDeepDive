@@ -154,6 +154,7 @@ export default function HomePage() {
       }
 
       // Episode cards - staggered reveal from alternating sides
+      // Smoother animations for mobile
       episodeCardsRef.current.forEach((card, i) => {
         if (!card) return;
 
@@ -161,20 +162,20 @@ export default function HomePage() {
         gsap.fromTo(
           card,
           {
-            x: isEven ? -100 : 100,
+            x: isEven ? -60 : 60, // Reduced offset for smoother mobile feel
             opacity: 0,
-            scale: 0.95,
+            scale: 0.98, // Less dramatic scale
           },
           {
             x: 0,
             opacity: 1,
             scale: 1,
-            duration: 1,
-            ease: 'power3.out',
+            duration: 0.8, // Slightly faster
+            ease: 'power2.out', // Smoother ease curve
             scrollTrigger: {
               trigger: card,
-              start: 'top 85%',
-              end: 'top 50%',
+              start: 'top 90%', // Start earlier
+              end: 'top 60%',
               toggleActions: 'play none none reverse',
             },
           }
@@ -346,11 +347,12 @@ export default function HomePage() {
               letterSpacing: '-0.02em',
             }}
           >
-            <span style={{ color: 'rgba(255, 255, 255, 0.95)' }}>The</span>{' '}
+            <span style={{ color: '#FFFFFF', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>The</span>{' '}
             <span
               style={{
                 fontStyle: 'italic',
-                color: 'rgba(200, 225, 255, 0.95)', // Light ocean blue that matches the water
+                color: '#E0F0FF', // Bright light blue for high contrast
+                textShadow: '0 2px 20px rgba(0,0,0,0.3)',
               }}
             >
               Deep Dive
@@ -362,10 +364,11 @@ export default function HomePage() {
             className="mt-6"
             style={{
               fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-              color: 'rgba(255, 255, 255, 0.55)', // Softer white, more readable than muted gray
+              color: 'rgba(255, 255, 255, 0.8)', // Brighter for better contrast
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               fontFamily: 'var(--font-mono), monospace',
+              textShadow: '0 1px 10px rgba(0,0,0,0.3)',
             }}
           >
             Psychoanalysis Sessions
@@ -377,7 +380,7 @@ export default function HomePage() {
           ref={scrollIndicatorRef}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>
+          <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>
             SCROLL TO DIVE
           </p>
           <svg
@@ -434,11 +437,11 @@ export default function HomePage() {
               fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)',
               textAlign: 'center',
               lineHeight: 1.8,
-              color: 'var(--text-muted)',
+              color: 'var(--text-secondary)', // Brighter than text-muted
             }}
           >
-            <span className="intro-word inline-block">In sharing our darkness,</span>{' '}
-            <span className="intro-word inline-block">we find our light.</span>
+            <span className="intro-word inline-block">In sharing darkness,</span>{' '}
+            <span className="intro-word inline-block">we find light.</span>
           </p>
         </div>
       </section>

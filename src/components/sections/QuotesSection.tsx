@@ -177,7 +177,7 @@ export default function QuotesSection() {
       }
     };
 
-    // Mobile touch events - distinguish tap/long-press from scroll
+    // Mobile touch events - simplified for better responsiveness
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
       touchStartRef.current = {
@@ -186,17 +186,17 @@ export default function QuotesSection() {
         time: Date.now(),
       };
 
-      // Start long-press timer
+      // Start a short timer - if they don't scroll within 150ms, activate spotlight
       if (longPressTimeoutRef.current) {
         clearTimeout(longPressTimeoutRef.current);
       }
 
       longPressTimeoutRef.current = setTimeout(() => {
-        // Long press detected - activate spotlight (only if not scrolling)
+        // If still holding and haven't scrolled, activate spotlight
         if (touchStartRef.current && !isScrollingRef.current) {
           activateSpotlight(touchStartRef.current.x, touchStartRef.current.y);
         }
-      }, LONG_PRESS_DURATION);
+      }, 150); // Quick activation - 150ms
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -206,32 +206,42 @@ export default function QuotesSection() {
       const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
       const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
 
-      // If finger moved beyond threshold, it's a scroll - cancel long-press
-      if (deltaX > TAP_THRESHOLD || deltaY > TAP_THRESHOLD) {
+      // If finger moved significantly, it's a scroll - cancel spotlight activation
+      if (deltaY > TAP_THRESHOLD) {
         if (longPressTimeoutRef.current) {
           clearTimeout(longPressTimeoutRef.current);
           longPressTimeoutRef.current = null;
         }
-        touchStartRef.current = null; // Mark as scroll, not tap
+        touchStartRef.current = null;
+      } else if (touchActive && deltaX > 5) {
+        // If spotlight is already active, allow moving it with finger
+        const container = quotesContainerRef.current;
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          setMousePos({
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top,
+          });
+        }
       }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      // Cancel long-press timer
+      // Cancel pending activation timer
       if (longPressTimeoutRef.current) {
         clearTimeout(longPressTimeoutRef.current);
         longPressTimeoutRef.current = null;
       }
 
-      // Check if this was a tap (not a scroll)
-      if (touchStartRef.current) {
+      // Quick tap - if they released within 150ms without moving, activate spotlight at tap point
+      if (touchStartRef.current && !isScrollingRef.current) {
         const touch = e.changedTouches[0];
         const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
         const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
         const duration = Date.now() - touchStartRef.current.time;
 
-        // Quick tap (less than 300ms and didn't move much, and not during/after scroll)
-        if (deltaX < TAP_THRESHOLD && deltaY < TAP_THRESHOLD && duration < LONG_PRESS_DURATION && !isScrollingRef.current) {
+        // Quick tap detection
+        if (deltaX < TAP_THRESHOLD && deltaY < TAP_THRESHOLD && duration < 200) {
           activateSpotlight(touch.clientX, touch.clientY);
         }
       }
@@ -385,6 +395,10 @@ export default function QuotesSection() {
           // Hide scrollbar but keep functionality
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          // Prevent text selection on tap but allow vertical scroll
+          userSelect: isMobile ? 'none' : 'auto',
+          WebkitUserSelect: isMobile ? 'none' : 'auto',
+          touchAction: 'pan-y', // Allow vertical scroll, capture taps
         }}
       >
         {/* The actual quotes - always rendered but masked */}
