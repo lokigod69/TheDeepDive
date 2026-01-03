@@ -437,9 +437,8 @@ export default function HomePage() {
               color: 'var(--text-muted)',
             }}
           >
-            <span className="intro-word inline-block">I share my darkness</span>{' '}
-            <span className="intro-word inline-block">so you might find</span>{' '}
-            <span className="intro-word inline-block">your light.</span>
+            <span className="intro-word inline-block">In sharing our darkness,</span>{' '}
+            <span className="intro-word inline-block">we find our light.</span>
           </p>
         </div>
       </section>
