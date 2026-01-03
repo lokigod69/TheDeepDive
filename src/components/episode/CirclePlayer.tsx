@@ -8,9 +8,10 @@ interface CirclePlayerProps {
   duration: number;
   durationFormatted: string;
   onPlayStateChange?: (isPlaying: boolean) => void;
+  onEnded?: () => void;
 }
 
-export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlayerProps) {
+export default function CirclePlayer({ audioUrl, onPlayStateChange, onEnded }: CirclePlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -74,6 +75,7 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
     const handleEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      onEnded?.();
     };
 
     const handlePlay = () => setIsPlaying(true);

@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { getEpisodeById, getAllSeasons, formatEpisodeNumber, getSlidesByEpisodeId } from '@/lib/data';
+import { getEpisodeById, getAllSeasons, formatEpisodeNumber, getSlidesByEpisodeId, getAdjacentEpisodes } from '@/lib/data';
 import CirclePlayer from '@/components/episode/CirclePlayer';
 import VideoSection from '@/components/episode/VideoSection';
 import SlidesCarousel from '@/components/episode/SlidesCarousel';
@@ -14,6 +15,9 @@ export default function EpisodePage() {
   const episode = getEpisodeById(episodeId);
   const seasons = getAllSeasons();
   const slides = getSlidesByEpisodeId(episodeId);
+  const { next: nextEpisode } = getAdjacentEpisodes(episodeId);
+
+  const [hasEnded, setHasEnded] = useState(false);
 
   if (!episode) {
     return (
@@ -25,6 +29,11 @@ export default function EpisodePage() {
 
   // Find season info
   const season = seasons.find(s => s.id === episode.seasonId);
+  const nextSeason = nextEpisode ? seasons.find(s => s.id === nextEpisode.seasonId) : null;
+
+  const handleEpisodeEnd = () => {
+    setHasEnded(true);
+  };
 
   return (
     <main className="min-h-screen relative" style={{ background: 'var(--bg-deep)' }}>
@@ -125,7 +134,62 @@ export default function EpisodePage() {
             audioUrl={episode.audioUrl}
             duration={episode.durationSeconds}
             durationFormatted={episode.duration}
+            onEnded={handleEpisodeEnd}
           />
+
+          {/* Next Episode Prompt */}
+          <AnimatePresence>
+            {hasEnded && nextEpisode && (
+              <motion.div
+                className="mt-8 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <p
+                  className="mono mb-4"
+                  style={{ fontSize: 'var(--type-small)', color: 'var(--text-muted)' }}
+                >
+                  Session complete
+                </p>
+                <Link
+                  href={`/episode/${nextEpisode.id}`}
+                  className="inline-flex flex-col items-center gap-2 group p-6 rounded-xl transition-all"
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <span
+                    className="mono uppercase tracking-widest"
+                    style={{ fontSize: '11px', color: 'var(--text-muted)' }}
+                  >
+                    Up Next · Season {nextSeason?.number || 1} Session {formatEpisodeNumber(nextEpisode.episodeNumber)}
+                  </span>
+                  <span
+                    className="group-hover:text-[var(--accent-primary)] transition-colors"
+                    style={{
+                      fontFamily: 'var(--font-serif), Georgia, serif',
+                      fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    {nextEpisode.title}
+                  </span>
+                  <span
+                    className="inline-flex items-center gap-2 mt-2"
+                    style={{ color: 'var(--accent-primary)', fontSize: 'var(--type-small)' }}
+                  >
+                    Continue
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.section>
 
         {/* Video Section */}
