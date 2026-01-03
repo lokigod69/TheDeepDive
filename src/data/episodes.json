@@ -31,7 +31,22 @@
           "durationSeconds": 2322,
           "audioUrl": "/audio/episode-02.m4a",
           "videoUrl": "VvJyhysdD5E",
-          "slides": []
+          "slides": [
+            "/slides/s1-e02/slide-01.jpg",
+            "/slides/s1-e02/slide-02.jpg",
+            "/slides/s1-e02/slide-03.jpg",
+            "/slides/s1-e02/slide-04.jpg",
+            "/slides/s1-e02/slide-05.jpg",
+            "/slides/s1-e02/slide-06.jpg",
+            "/slides/s1-e02/slide-07.jpg",
+            "/slides/s1-e02/slide-08.jpg",
+            "/slides/s1-e02/slide-09.jpg",
+            "/slides/s1-e02/slide-10.jpg",
+            "/slides/s1-e02/slide-11.jpg",
+            "/slides/s1-e02/slide-12.jpg",
+            "/slides/s1-e02/slide-13.jpg",
+            "/slides/s1-e02/slide-14.jpg"
+          ]
         },
         {
           "id": "s1-e03",
