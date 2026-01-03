@@ -417,19 +417,29 @@ export default function HomePage() {
           <p
             className="quote-text"
             style={{
-              fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               textAlign: 'center',
-              lineHeight: 1.8,
+              lineHeight: 1.6,
+              fontStyle: 'italic',
             }}
           >
-            <span className="intro-word inline-block">In these sessions,</span>{' '}
-            <span className="intro-word inline-block">we examine</span>{' '}
-            <span className="intro-word inline-block">the stories</span>{' '}
-            <span className="intro-word inline-block">we tell ourselves—</span>{' '}
-            <span className="intro-word inline-block">and the ones</span>{' '}
-            <span className="intro-word inline-block">we</span>{' '}
-            <span className="intro-word inline-block" style={{ color: 'var(--accent-primary)' }}>hide</span>{' '}
-            <span className="intro-word inline-block">from.</span>
+            <span className="intro-word inline-block">A window</span>{' '}
+            <span className="intro-word inline-block">into the work</span>{' '}
+            <span className="intro-word inline-block">of becoming</span>{' '}
+            <span className="intro-word inline-block" style={{ color: 'var(--accent-primary)' }}>whole.</span>
+          </p>
+          <p
+            className="mt-8"
+            style={{
+              fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)',
+              textAlign: 'center',
+              lineHeight: 1.8,
+              color: 'var(--text-muted)',
+            }}
+          >
+            <span className="intro-word inline-block">I share my darkness</span>{' '}
+            <span className="intro-word inline-block">so you might find</span>{' '}
+            <span className="intro-word inline-block">your light.</span>
           </p>
         </div>
       </section>

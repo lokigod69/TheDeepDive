@@ -16,6 +16,8 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
   const [currentTime, setCurrentTime] = useState(0);
   const [actualDuration, setActualDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [hasStartedLoading, setHasStartedLoading] = useState(false);
 
   // Notify parent of play state changes
   useEffect(() => {
@@ -37,7 +39,11 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play();
+      setHasStartedLoading(true);
+      setIsBuffering(true);
+      audioRef.current.play().catch(() => {
+        setIsBuffering(false);
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -73,12 +79,29 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
+    // Buffer tracking events
+    const handleWaiting = () => setIsBuffering(true);
+    const handlePlaying = () => setIsBuffering(false);
+    const handleCanPlayThrough = () => setIsBuffering(false);
+    const handleLoadStart = () => setHasStartedLoading(true);
+    const handleProgress = () => {
+      // When enough data is buffered, hide loading
+      if (audio.buffered.length > 0 && audio.readyState >= 3) {
+        setIsBuffering(false);
+      }
+    };
+
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('durationchange', handleDurationChange);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('playing', handlePlaying);
+    audio.addEventListener('canplaythrough', handleCanPlayThrough);
+    audio.addEventListener('loadstart', handleLoadStart);
+    audio.addEventListener('progress', handleProgress);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
@@ -87,6 +110,11 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('playing', handlePlaying);
+      audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+      audio.removeEventListener('loadstart', handleLoadStart);
+      audio.removeEventListener('progress', handleProgress);
     };
   }, []);
 
@@ -106,8 +134,8 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
 
   return (
     <div className="flex flex-col items-center">
-      {/* Hidden audio element */}
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      {/* Hidden audio element - use preload auto for streaming */}
+      <audio ref={audioRef} src={audioUrl} preload="auto" />
 
       {/* Breathing Circle */}
       <motion.button
@@ -117,14 +145,64 @@ export default function CirclePlayer({ audioUrl, onPlayStateChange }: CirclePlay
           width: '180px',
           height: '180px',
           background: 'var(--bg-elevated)',
-          border: `2px solid ${isPlaying ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
+          border: `2px solid ${isPlaying ? 'var(--accent-primary)' : isBuffering ? 'var(--text-muted)' : 'var(--border-subtle)'}`,
         }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
+        {/* Buffering indicator - pulsing orb */}
+        <AnimatePresence>
+          {isBuffering && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* Pulsing outer ring for loading */}
+              <motion.div
+                className="absolute rounded-full"
+                style={{
+                  width: '160px',
+                  height: '160px',
+                  border: '2px solid var(--text-muted)',
+                  opacity: 0.5,
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.5, 0.2, 0.5],
+                }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+              {/* Inner pulsing orb */}
+              <motion.div
+                className="absolute rounded-full"
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  background: 'radial-gradient(circle, rgba(139, 157, 195, 0.4) 0%, transparent 70%)',
+                }}
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.6, 0.3, 0.6],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Inner animated rings when playing */}
         <AnimatePresence>
-          {isPlaying && (
+          {isPlaying && !isBuffering && (
             <>
               {/* Pulsing inner ring */}
               <motion.div

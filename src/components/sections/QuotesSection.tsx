@@ -103,6 +103,7 @@ export default function QuotesSection() {
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [touchActive, setTouchActive] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   // Touch tracking refs
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -250,6 +251,17 @@ export default function QuotesSection() {
     const handleScroll = () => {
       isScrollingRef.current = true;
 
+      // Track scroll offset for mobile mask positioning
+      if (container) {
+        setScrollOffset(container.scrollTop);
+      }
+
+      // Hide spotlight during scroll to avoid visual glitches
+      if (isMobile) {
+        setIsHovering(false);
+        setTouchActive(false);
+      }
+
       // Cancel any pending long-press during scroll
       if (longPressTimeoutRef.current) {
         clearTimeout(longPressTimeoutRef.current);
@@ -379,8 +391,9 @@ export default function QuotesSection() {
         <div
           className={isMobile ? 'relative' : 'absolute inset-0'}
           style={{
-            maskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
-            WebkitMaskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
+            // On mobile, adjust y position by scroll offset so mask follows touch point correctly
+            maskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y + (isMobile ? scrollOffset : 0)}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
+            WebkitMaskImage: `radial-gradient(circle ${isMobile ? '200px' : '280px'} at ${mousePos.x}px ${mousePos.y + (isMobile ? scrollOffset : 0)}px, black 0%, black 60%, rgba(0,0,0,0.5) 80%, transparent 100%)`,
             // Mobile: use flex column layout for vertical stacking
             ...(isMobile ? { display: 'flex', flexDirection: 'column' as const, gap: '2.5rem', paddingBottom: '4rem' } : {}),
           }}
@@ -489,7 +502,7 @@ export default function QuotesSection() {
               height: isMobile ? '400px' : '600px',
               borderRadius: '50%',
               background: 'radial-gradient(circle, rgba(139, 157, 195, 0.22) 0%, rgba(139, 157, 195, 0.15) 30%, rgba(139, 157, 195, 0.08) 60%, transparent 85%)',
-              transform: `translate(${mousePos.x - (isMobile ? 200 : 300)}px, ${mousePos.y - (isMobile ? 200 : 300)}px)`,
+              transform: `translate(${mousePos.x - (isMobile ? 200 : 300)}px, ${mousePos.y + (isMobile ? scrollOffset : 0) - (isMobile ? 200 : 300)}px)`,
               transition: 'transform 0.05s ease-out',
             }}
           />

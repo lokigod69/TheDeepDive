@@ -10,12 +10,19 @@ interface SlidesCarouselProps {
   episodeTitle?: string;
 }
 
+// Touch swipe threshold in pixels
+const SWIPE_THRESHOLD = 50;
+
 export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Touch swipe tracking for lightbox
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
 
   // Mouse tracking for subtle parallax
   const mouseX = useMotionValue(0);
@@ -67,6 +74,47 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Touch swipe handlers for lightbox navigation
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (!touchStartRef.current || selectedIndex === null) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+
+    // Only swipe if horizontal movement is greater than vertical (intentional swipe)
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > deltaY) {
+      if (deltaX > 0 && selectedIndex > 0) {
+        // Swipe right = go to previous
+        setSelectedIndex(selectedIndex - 1);
+      } else if (deltaX < 0 && selectedIndex < slides.length - 1) {
+        // Swipe left = go to next
+        setSelectedIndex(selectedIndex + 1);
+      }
+    }
+
+    touchStartRef.current = null;
+  }, [selectedIndex, slides.length]);
+
+  // Attach touch handlers to lightbox when open
+  useEffect(() => {
+    const lightbox = lightboxRef.current;
+    if (selectedIndex === null || !lightbox) return;
+
+    lightbox.addEventListener('touchstart', handleTouchStart, { passive: true });
+    lightbox.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      lightbox.removeEventListener('touchstart', handleTouchStart);
+      lightbox.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [selectedIndex, handleTouchStart, handleTouchEnd]);
+
   // Prevent body scroll when lightbox is open
   useEffect(() => {
     if (selectedIndex !== null) {
@@ -94,9 +142,9 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
             fill="none"
             style={{ opacity: 0.5 }}
           >
-            <rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--text-muted)" strokeWidth="1.5"/>
-            <path d="M3 9H21" stroke="var(--text-muted)" strokeWidth="1.5"/>
-            <path d="M9 21V9" stroke="var(--text-muted)" strokeWidth="1.5"/>
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--text-muted)" strokeWidth="1.5" />
+            <path d="M3 9H21" stroke="var(--text-muted)" strokeWidth="1.5" />
+            <path d="M9 21V9" stroke="var(--text-muted)" strokeWidth="1.5" />
           </svg>
           <span
             style={{
@@ -146,7 +194,7 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
             whileTap={{ scale: 0.95 }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 12L6 8L10 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M10 12L6 8L10 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </motion.button>
         )}
@@ -175,7 +223,7 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
             whileTap={{ scale: 0.95 }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 12L10 8L6 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M6 12L10 8L6 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </motion.button>
         )}
@@ -299,6 +347,7 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
       <AnimatePresence>
         {selectedIndex !== null && (
           <motion.div
+            ref={lightboxRef}
             className="fixed inset-0 z-50 flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -367,7 +416,7 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
                 whileTap={{ scale: 0.95 }}
               >
                 <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M10 12L6 8L10 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </motion.button>
             )}
@@ -384,7 +433,7 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
                 whileTap={{ scale: 0.95 }}
               >
                 <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 12L10 8L6 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M6 12L10 8L6 4" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </motion.button>
             )}
@@ -468,13 +517,15 @@ export default function SlidesCarousel({ slides, episodeTitle }: SlidesCarouselP
               </div>
             </div>
 
-            {/* Keyboard hint */}
+            {/* Navigation hint - shows swipe on mobile, keyboard on desktop */}
             <div
               className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-4 mono"
               style={{ fontSize: '11px', color: 'var(--text-muted)' }}
             >
-              <span>← → Navigate</span>
-              <span>ESC Close</span>
+              <span className="hidden md:inline">← → Navigate</span>
+              <span className="hidden md:inline">ESC Close</span>
+              <span className="md:hidden">← Swipe to Navigate →</span>
+              <span className="md:hidden">Tap outside to close</span>
             </div>
           </motion.div>
         )}
