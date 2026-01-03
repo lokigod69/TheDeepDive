@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -18,6 +18,20 @@ export default function EpisodePage() {
   const { next: nextEpisode } = getAdjacentEpisodes(episodeId);
 
   const [hasEnded, setHasEnded] = useState(false);
+  const nextEpisodeRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to next episode section when audio ends
+  useEffect(() => {
+    if (hasEnded && nextEpisode && nextEpisodeRef.current) {
+      // Small delay to let the animation start
+      setTimeout(() => {
+        nextEpisodeRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 300);
+    }
+  }, [hasEnded, nextEpisode]);
 
   if (!episode) {
     return (
@@ -141,6 +155,7 @@ export default function EpisodePage() {
           <AnimatePresence>
             {hasEnded && nextEpisode && (
               <motion.div
+                ref={nextEpisodeRef}
                 className="mt-8 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
